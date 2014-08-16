@@ -124,9 +124,13 @@ class Version1X extends AbstractSocketIO
             return;
         }
 
-        $query = ['use_b64'   => $this->options['use_b64'],
+        $query = array_replace(['use_b64'   => $this->options['use_b64'],
                   'EIO'       => $this->options['version'],
-                  'transport' => $this->options['transport']];
+                  'transport' => $this->options['transport']]);
+
+        if (isset($this->options['query'])) {
+            $query = array_replace($query, $this->options['query']);
+        }
 
         if (isset($this->url['query'])) {
             $query = array_replace($query, $this->url['query']);
@@ -156,6 +160,10 @@ class Version1X extends AbstractSocketIO
                   'use_b64'   => $this->options['use_b64'],
                   'transport' => static::TRANSPORT_WEBSOCKET];
 
+        if (isset($this->options['query'])) {
+            $query = array_replace($query, $this->options['query']);
+        }
+
         $url = sprintf('/%s/?%s', trim($this->url['path'], '/'), http_build_query($query));
         $key = base64_encode(sha1(uniqid(mt_rand(), true), true));
 
@@ -180,4 +188,3 @@ class Version1X extends AbstractSocketIO
         $this->write(EngineInterface::UPGRADE);
     }
 }
-
